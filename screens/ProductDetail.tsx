@@ -13,17 +13,22 @@ import {
   StyleSheet,
   View,
   Text,
+  Button,
 } from 'react-native';
 import IProductDetails from '../interfaces/IProductDetails';
+import AuthContext from '../context/AuthProvider';
 
 import {get, post} from '../utils/Request';
 
 function ProductDetail({route, navigation}): JSX.Element {
-  const {product, loggedUser} = route.params;
+  const {product, isFromFavorite} = route.params;
 
   const [productDetail, onChangeProductDetail] =
     React.useState<IProductDetails | null>(null);
-  const [isFavorite, setIsFavorite] = React.useState<boolean>(product.favorite);
+  const [isFavorite, setIsFavorite] = React.useState<boolean>(
+    product.favorite || isFromFavorite,
+  );
+  const [loggedUser, setLoggedUser] = React.useContext(AuthContext);
 
   const fetchData = async () => {
     const response = await get(
@@ -49,8 +54,12 @@ function ProductDetail({route, navigation}): JSX.Element {
       <View style={styles.card}>
         <Text style={styles.title}>{productDetail?.name}</Text>
         <Text>R$ {productDetail?.price}</Text>
-        <Switch onValueChange={setFavorite} value={isFavorite} />
+        <View style={{flexDirection: 'row'}}>
+          <Text>{'Favorito'}</Text>
+          <Switch onValueChange={setFavorite} value={isFavorite} />
+        </View>
       </View>
+      <Button onPress={() => navigation.goBack()} title="Voltar" />
     </SafeAreaView>
   );
 }

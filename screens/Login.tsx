@@ -13,15 +13,17 @@ import {
   TextInput,
   View,
   Button,
+  Alert,
 } from 'react-native';
 import ILoggedUser from '../interfaces/ILoggedUser';
 import ILoginRequest from '../interfaces/ILoginRequest';
-
+import AuthContext from '../context/AuthProvider';
 import {post} from '../utils/Request';
 
 function Login({navigation}): JSX.Element {
   const [email, onChangeEmail] = React.useState('');
   const [password, onChangePassword] = React.useState('');
+  const [loggedUser, setLoggedUser] = React.useContext(AuthContext);
 
   const onPressLogin = async () => {
     console.log('chamando login');
@@ -33,10 +35,11 @@ function Login({navigation}): JSX.Element {
       },
     );
 
-    console.log('voltou');
-    console.log(loggedUser);
-  //  navigation.navigate('ProductList', {loggedUser});
-  navigation.navigate('ProductFavorites', {loggedUser});
+    if (loggedUser) {
+      setLoggedUser(loggedUser);
+    } else {
+      Alert.alert('Usuário não encontrado');
+    }
   };
 
   const onPressSignUp = () => {

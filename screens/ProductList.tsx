@@ -15,14 +15,13 @@ import {
   Text,
 } from 'react-native';
 import IProduct from '../interfaces/IProduct';
-
+import AuthContext from '../context/AuthProvider';
 import {get} from '../utils/Request';
 
 function ProductList({route, navigation}): JSX.Element {
   const [productList, onChangeProductList] = React.useState<[IProduct]>([]);
   const [currentPage, onChangeCurrentPage] = React.useState<number>(1);
-
-  const {loggedUser} = route.params;
+  const [loggedUser, setLoggedUser] = React.useContext(AuthContext);
 
   const fetchData = async () => {
     const response = await get(
@@ -42,15 +41,22 @@ function ProductList({route, navigation}): JSX.Element {
   }
 
   const showDetail = (item) => {
+    console.log('detail')
+    console.log(loggedUser)
     navigation.navigate('ProductDetail', {product: item, loggedUser});
   }
 
   const renderCard = ({item}) => {
+    console.log('renderCard')
+    console.log(item);
+    console.log(item.favorite);
+    const favoriteText = item.favorite ? 'Favorito' : '';
+    console.log(favoriteText);
     return (
       <Pressable onPress={() => showDetail(item)} style={styles.card}>
         <Text style={styles.title}>{item.name}</Text>
         <Text>R$ {item.price}</Text>
-        {item.favorite ?? <Text>Favorito</Text>}
+        <Text>{favoriteText}</Text>
       </Pressable>
     );
   };

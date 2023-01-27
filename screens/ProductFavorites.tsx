@@ -15,13 +15,12 @@ import {
   Text,
 } from 'react-native';
 import IProduct from '../interfaces/IProduct';
-
+import AuthContext from '../context/AuthProvider';
 import {get} from '../utils/Request';
 
 function ProductFavorites({route, navigation}): JSX.Element {
   const [productList, onChangeProductList] = React.useState<[IProduct]>([]);
-
-  const {loggedUser} = route.params;
+  const [loggedUser, setLoggedUser] = React.useContext(AuthContext);
 
   const fetchData = async () => {
     const response = await get('storeProducts/getFavProducts', loggedUser);
@@ -34,7 +33,7 @@ function ProductFavorites({route, navigation}): JSX.Element {
   }, []);
 
   const showDetail = item => {
-    navigation.navigate('ProductDetail', {product: item, loggedUser});
+    navigation.navigate('ProductDetail', {product: item, isFromFavorite: true});
   };
 
   const renderCard = ({item}) => {
