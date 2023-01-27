@@ -35,6 +35,8 @@ function Login({navigation}): JSX.Element {
 
     console.log('voltou');
     console.log(loggedUser);
+  //  navigation.navigate('ProductList', {loggedUser});
+  navigation.navigate('ProductFavorites', {loggedUser});
   };
 
   const onPressSignUp = () => {

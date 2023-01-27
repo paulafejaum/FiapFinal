@@ -11,11 +11,20 @@ var instance = axios.create({
 
 //todo axios dar erro qdo diferente de 200
 
-async function post<T, Z>(url: string, params: T): Promise<Z> {
+async function post<T, Z>(url: string, params: T, loggedUser = undefined): Promise<Z> {
   try {
+    let config = {};
+    if (loggedUser) {
+     config = {
+        headers: {
+          Authorization: `Bearer ${loggedUser.token}`,
+        },
+      };
+    } 
+
     console.log('entrou em post');
     console.log(`${BASE_URL}${url}`);
-    const response = await instance.post(url, params);
+    const response = await instance.post(url, params, config);
     console.log(response.data);
 
     return response.data as Z;
@@ -40,4 +49,25 @@ async function put<T>(url: string, params: T) {
   return undefined;
 }
 
-export {post, put};
+async function get(url: string, loggedUser) {
+  try {
+    console.log('entrou em get');
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${loggedUser.token}`,
+      },
+    };
+
+    const response = await instance.get(url, config);
+    console.log(response.data);
+
+    return response.data;
+  } catch (error) {
+    console.log('deu erro');
+    console.log(error);
+  }
+  return undefined;
+}
+
+export {post, put, get};
