@@ -17,8 +17,10 @@ import {
 } from 'react-native';
 import IProductDetails from '../interfaces/IProductDetails';
 import AuthContext from '../context/AuthProvider';
+import MapView, {Marker} from 'react-native-maps';
 
 import {get, post} from '../utils/Request';
+import IProductStore from '../interfaces/IProductStore';
 
 function ProductDetail({route, navigation}): JSX.Element {
   const {product, isFromFavorite} = route.params;
@@ -36,6 +38,7 @@ function ProductDetail({route, navigation}): JSX.Element {
       loggedUser,
     );
     console.log(response);
+    console.log(response.product.stores);
     onChangeProductDetail(response.product);
   };
 
@@ -58,6 +61,28 @@ function ProductDetail({route, navigation}): JSX.Element {
           <Text>{'Favorito'}</Text>
           <Switch onValueChange={setFavorite} value={isFavorite} />
         </View>
+      </View>
+      <View style={{width: '100%', height: 300, margin: 10}}>
+        <MapView
+          style={{width: '100%', height: '100%'}}
+          initialRegion={{
+            latitude: -23.6271593,
+            longitude: -46.59813,
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.0421,
+          }}>
+          {product.stores?.map((marker, index) => (
+            <Marker
+              key={index}
+              coordinate={{
+                latitude: marker.latitude,
+                longitude: marker.longitude,
+              }}
+              title={marker.name}
+              description={marker.address}
+            />
+          ))}
+        </MapView>
       </View>
       <Button onPress={() => navigation.goBack()} title="Voltar" />
     </SafeAreaView>

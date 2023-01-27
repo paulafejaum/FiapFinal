@@ -27,17 +27,20 @@ function Login({navigation}): JSX.Element {
 
   const onPressLogin = async () => {
     console.log('chamando login');
-    const loggedUser = await post<ILoginRequest, ILoggedUser>(
-      '/storeProducts/login',
-      {
-        email: email,
-        password: password,
-      },
-    );
-
-    if (loggedUser) {
-      setLoggedUser(loggedUser);
-    } else {
+    try {
+      const loggedUser = await post<ILoginRequest, ILoggedUser>(
+        '/storeProducts/login',
+        {
+          email: email,
+          password: password,
+        },
+      );
+      if (loggedUser) {
+        setLoggedUser(loggedUser);
+      } else {
+        Alert.alert('Usuário não encontrado');
+      }
+    } catch (error) {
       Alert.alert('Usuário não encontrado');
     }
   };
