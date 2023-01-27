@@ -9,13 +9,14 @@ import {
   DrawerItemList,
   DrawerItem,
 } from '@react-navigation/drawer';
-import {View, Text} from 'react-native';
+import {Text} from 'react-native';
 import SignUp from './screens/SignUp';
 import Login from './screens/Login';
 import ProductList from './screens/ProductList';
 import ProductDetail from './screens/ProductDetail';
 import ProductFavorites from './screens/ProductFavorites';
 import AuthContext from './context/AuthProvider';
+import GeoContext from './context/GeoProvider';
 import ILoggedUser from './interfaces/ILoggedUser';
 
 const LoggedDrawer = createDrawerNavigator();
@@ -54,11 +55,13 @@ const FavoriteStackRoutes = () => {
 
 const App = () => {
   const [loggedUser, setLoggedUser] = React.useState<ILoggedUser | null>(null);
+  const [currentGeoLocation, setGeoLocation] = React.useState(null);
 
   return (
     <AuthContext.Provider value={[loggedUser, setLoggedUser]}>
       <NavigationContainer>
         {loggedUser ? (
+          <GeoContext.Provider value={[currentGeoLocation, setGeoLocation]}>
           <LoggedDrawer.Navigator
             drawerContent={props => <CustomDrawerContent {...props} loggedUser={loggedUser} setLoggedUser={setLoggedUser} />}>
             <LoggedDrawer.Screen
@@ -70,6 +73,7 @@ const App = () => {
               component={FavoriteStackRoutes}
             />
           </LoggedDrawer.Navigator>
+          </GeoContext.Provider>
         ) : (
           <NotLoggedStack.Navigator>
             <NotLoggedStack.Screen

@@ -14,14 +14,17 @@ import {
   Pressable,
   Text,
 } from 'react-native';
+import Geolocation from '@react-native-community/geolocation';
 import IProduct from '../interfaces/IProduct';
 import AuthContext from '../context/AuthProvider';
+import GeoContext from '../context/GeoProvider';
 import {get} from '../utils/Request';
 
 function ProductList({route, navigation}): JSX.Element {
   const [productList, onChangeProductList] = React.useState<[IProduct]>([]);
   const [currentPage, onChangeCurrentPage] = React.useState<number>(1);
   const [loggedUser, setLoggedUser] = React.useContext(AuthContext);
+  const [currentGeoLocation, setGeoLocation] = React.useContext(GeoContext);
 
   const fetchData = async () => {
     const response = await get(
@@ -32,26 +35,38 @@ function ProductList({route, navigation}): JSX.Element {
     onChangeProductList([...productList, ...response?.products]);
   };
 
+  const getCurrentPosition = () => {
+    Geolocation.requestAuthorization( () => {
+      Geolocation.getCurrentPosition(
+        (pos) => {
+          console.log('pegou localizacao')
+          console.log(pos)
+          setGeoLocation(pos);
+        },
+        (error) => {},
+        { enableHighAccuracy: true }
+      );
+    });
+  }
+
   useEffect(() => {
     fetchData();
   }, [currentPage]);
+
+  useEffect(() => {
+    getCurrentPosition();
+  }, []);
 
   const fetchMoreData = async () => {
     onChangeCurrentPage(currentPage+1);
   }
 
   const showDetail = (item) => {
-    console.log('detail')
-    console.log(loggedUser)
     navigation.navigate('ProductDetail', {product: item, loggedUser});
   }
 
   const renderCard = ({item}) => {
-    console.log('renderCard')
-    console.log(item);
-    console.log(item.favorite);
     const favoriteText = item.favorite ? 'Favorito' : '';
-    console.log(favoriteText);
     return (
       <Pressable onPress={() => showDetail(item)} style={styles.card}>
         <Text style={styles.title}>{item.name}</Text>
